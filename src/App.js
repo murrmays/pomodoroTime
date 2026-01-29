@@ -4,18 +4,24 @@ import TimerDisplay from './Components/Timer';
 import Controls from './Components/Controls';
 import ModeSelector from './Components/Mode';
 import { useState, useEffect } from 'react';
-
-const TIMER_SETTINGS = {
-  'work': 25 * 60,
-  'short-break': 5 * 60,
-  'long-break': 15 * 60,
-};
+import alarmSound from './Assets/alarm.mp3';
 
 function App() {
-  const [timeLeft, setTimeLeft] = useState(TIMER_SETTINGS['work']);
+  const [settings, setSettings] = useState({
+    'work': 25 * 60,
+    'short-break': 5 * 60,
+    'long-break': 15 * 60,
+  });
+
+  const [timeLeft, setTimeLeft] = useState(settings['work']);
   const [isRunning, setIsRunning] = useState(false);
   const [mode, setMode] = useState('work');
   const [cycles, setCycles] = useState(0);
+  const playSound = () => {
+    const audio = new Audio(alarmSound);
+    // audio.volume = 0.5;
+    audio.play();
+  };
 
   useEffect(() => {
     let interval = null;
@@ -25,7 +31,7 @@ function App() {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
-      //тут надо добавить звук
+      playSound();
 
       if(mode === 'work') {
         const newCycles = cycles + 1;
@@ -43,20 +49,28 @@ function App() {
 
   const switchMode = (newMode) => {
     setMode(newMode);
-    setTimeLeft(TIMER_SETTINGS[newMode]);
+    setTimeLeft(settings[newMode]);
+    setIsRunning(true);
   };
 
   const handleToggle = () => setIsRunning(!isRunning);
 
   const handleReset = () => {
     setIsRunning(false);
-    setTimeLeft(TIMER_SETTINGS[mode]);
+    setTimeLeft(settings[mode]);
   };
 
   const handleModeChange = (newMode) => {
     setMode(newMode)
     setIsRunning(false);
-    setTimeLeft(TIMER_SETTINGS[newMode]);
+    setTimeLeft(settings[newMode]);
+  };
+
+  const handleTimeUpdate = (newTime) => {
+    const newSettings = {...settings, [mode]: newTime};
+    setSettings(newSettings);
+
+    setTimeLeft(newTime);
   };
 
   return (
@@ -69,6 +83,8 @@ function App() {
 
       <TimerDisplay
         timeLeft={timeLeft}
+        isRunning={isRunning}
+        onUpdate={handleTimeUpdate}
       />
 
       <Controls
@@ -86,6 +102,5 @@ function App() {
 
 export default App;
 
-//ввод времени вручную
-//звук по окончании времени
 //вид + адаптивка
+//можно сделать еще выбор звука для таймера
