@@ -5,10 +5,17 @@ import Controls from './Components/Controls';
 import ModeSelector from './Components/Mode';
 import { useState, useEffect } from 'react';
 
+const TIMER_SETTINGS = {
+  'work': 25 * 60,
+  'short-break': 5 * 60,
+  'long-break': 15 * 60,
+};
+
 function App() {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [timeLeft, setTimeLeft] = useState(TIMER_SETTINGS['work']);
   const [isRunning, setIsRunning] = useState(false);
   const [mode, setMode] = useState('work');
+  const [cycles, setCycles] = useState(0);
 
   useEffect(() => {
     let interval = null;
@@ -18,33 +25,38 @@ function App() {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
+      //тут надо добавить звук
+
+      if(mode === 'work') {
+        const newCycles = cycles + 1;
+        setCycles(newCycles);
+
+        if (newCycles % 4 === 0)
+          switchMode('long-break');
+        else
+          switchMode('short-break');
+      } else 
+        switchMode('work');
     }
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft]);
+  }, [isRunning, timeLeft, mode, cycles]);
+
+  const switchMode = (newMode) => {
+    setMode(newMode);
+    setTimeLeft(TIMER_SETTINGS[newMode]);
+  };
 
   const handleToggle = () => setIsRunning(!isRunning);
 
   const handleReset = () => {
     setIsRunning(false);
-    if (mode === 'work') {
-      setTimeLeft(25 * 60);
-    } else if (mode === 'short-break') {
-      setTimeLeft(5 * 60);
-    } else if (mode === 'long-break') {
-      setTimeLeft(15 * 60);
-    }
+    setTimeLeft(TIMER_SETTINGS[mode]);
   };
 
   const handleModeChange = (newMode) => {
     setMode(newMode)
     setIsRunning(false);
-    if (newMode === 'work') {
-      setTimeLeft(25 * 60);
-    } else if (newMode === 'short-break') {
-      setTimeLeft(5 * 60);
-    } else if (newMode === 'long-break') {
-      setTimeLeft(15 * 60);
-    }
+    setTimeLeft(TIMER_SETTINGS[newMode]);
   };
 
   return (
@@ -64,6 +76,10 @@ function App() {
         onToggle={handleToggle}
         onReset={handleReset}
       />
+
+      <div className='cycles-display'>
+        Completed sessions: {cycles}
+      </div>
     </div>
   );
 };
@@ -71,8 +87,5 @@ function App() {
 export default App;
 
 //ввод времени вручную
-//переключение сессий по завершении работы идет перерыв
-//  после 4х работ долгий перерыв и тд
-//отображать число рабочих сессий
 //звук по окончании времени
 //вид + адаптивка
