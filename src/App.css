@@ -19,6 +19,7 @@ body {
 .app-wrapper {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: background-color 0.5s ease;
@@ -37,6 +38,7 @@ body {
 }
 
 .app-container {
+  margin: 20px 0 20px 0;
   background-color: var(--bg-container);
   padding: 40px;
   border-radius: 20px;
@@ -48,6 +50,36 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
+.app-header {
+  background-color: var(--bg-container);
+  padding: 20px 20px 0 20px;
+  border-radius: 0 0 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /* margin-bottom: 20px; */
+}
+
+.settings-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.settings-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .app-title {
   color: var(--text-color);
   margin-bottom: 30px;
@@ -57,7 +89,6 @@ body {
 .mode-buttons {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
   background: rgba(0, 0, 0, 0.15);
   padding: 5px;
   border-radius: 50px;
@@ -172,7 +203,6 @@ body {
 .controls {
   display: flex;
   gap: 30px;
-  margin-top: 10px;
   align-items: center;
 }
 
@@ -222,4 +252,281 @@ body {
   color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
   font-weight: bold;
+}
+
+.sessions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+  max-width: 100%;
+  padding: 0 20 px;
+}
+
+.session-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  opacity: 0;
+  animation: popIn 0.5s forwards;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  80% {
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  width: 400px;
+  max-width: 90%;
+  color: #333;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #c4cbc7;
+  padding-bottom: 10px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #5f716a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #656565;
+}
+
+.settings-section h3 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inputs-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+  font-size: 16px;
+}
+
+.sounds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sound-option {
+  position: relative;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sound-option input {
+  display: none;
+}
+
+.sound-option:hover {
+  border-color: #ccc;
+  background: #f9f9f9;
+}
+
+.sound-option.selected {
+  border-color: #4d803d;
+  background-color: rgba(73, 186, 86, 0.1);
+  color: #4d803d;
+  font-weight: bold;
+}
+
+.volume-slider {
+  -webkit-appearance: none;
+  width: 150px;
+  height: 6px;
+  background: #ddd;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4d803d;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: #4d803d;
+  cursor: pointer;
+}
+
+.modal-ok-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background: #4d803d;;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-ok-btn:hover {
+  background: #3c5c32;;
+}
+
+.interval-control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.setting-label {
+  font-weight: bold;
+  color: #555;
+  font-size: 15px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  gap: 5px;
+}
+
+.stepper-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f1f1f1;
+  color: #555;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.stepper-btn:hover {
+  background: #eeeeee;
+  color: #000;
+}
+
+.stepper-btn:active {
+  transform: scale(0.95);
+}
+
+.stepper-value {
+  width: 40px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #4d803d;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
 }

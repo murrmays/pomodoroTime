@@ -15,7 +15,7 @@ function TimerDisplay({timeLeft, totalTime, isRunning, onUpdate}) {
     useEffect(() => {
         if(!isEditing) {
             const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const s = (timeLeft % 60).toString().padStart(2, '0');
+            const s = (Math.ceil(timeLeft) % 60).toString().padStart(2, '0');
             setMinutes(m);
             setSeconds(s);
         }
