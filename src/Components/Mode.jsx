@@ -1,6 +1,6 @@
 function ModeSelector ({mode, onModeChange}) {
     return (
-        <div className="mode-btns">
+        <div className="mode-buttons">
             <button
                 onClick={() => onModeChange('work')}
                 className={mode === 'work' ? 'active' : ''}

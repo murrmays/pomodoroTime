@@ -1,38 +1,225 @@
-.App {
-  text-align: center;
+:root {
+  --color-work: #bc3c3c;
+  --color-short: #bcb166;
+  --color-long: #4d803d;
+  --text-color: #ffffff;
+  --bg-container: rgba(255, 255, 255, 0.1);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  font-family: 'Caveat', cursive;
 }
 
-.App-header {
-  background-color: #282c34;
+.app-wrapper {
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.5s ease;
+}
+
+.app-wrapper.work {
+  background-color: var(--color-work);
+}
+
+.app-wrapper.short-break {
+  background-color: var(--color-short);
+}
+
+.app-wrapper.long-break {
+  background-color: var(--color-long);
+}
+
+.app-container {
+  background-color: var(--bg-container);
+  padding: 40px;
+  border-radius: 20px;
+  width: 480px;
+  max-width: 95%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.app-title {
+  color: var(--text-color);
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 5px;
+  border-radius: 50px;
+}
+
+.mode-buttons button {
+  font-family: 'Caveat', cursive;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.mode-buttons button:hover {
+  color: #fff;
+}
+
+.mode-buttons button.active {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: #fff;
+  font-weight: 800;
+}
+
+.timer-container {
+  position: relative;
+  width: 440px;
+  height: 440px;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+.timer-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg);
+  z-index: 1;
+  pointer-events: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.progress-ring__circle{
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.timer-image-container {
+  position: absolute;
+  padding-bottom: 30px;
+  width: 320px;
+  height: 320px;
+  z-index: 2;
+  opacity: 0.8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.timer-text {
+  position: relative;
+  z-index: 3;
+}
+
+.timer-display {
+  font-size: 100px;
+  font-weight: bold;
+  color: var(--text-color);
+  padding-top: 20px;
+  margin: 20px 0;
+  text-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-display.editable {
+  cursor: pointer;
+}
+
+.timer-display.editable:hover {
+  opacity: 0.8;
+}
+
+.time-input {
+  font-family: 'Caveat', cursive;
+  font-size: 100px;
+  font-weight: bold;
+  width: 140px;
+  background: transparent;
+  border: none;
+  border-bottom: 4px solid rgba(255, 255, 255, 0.5);
+  color: var(--text-color);
+  text-align: center;
+  outline: none;
+  margin: 0 5px;
+}
+
+.time-input::-webkit-outer-spin-button,
+.time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 30px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.controls button {
+  font-family: 'Caveat', cursive;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: transform 0.1s, box-shadow 0.1s;
+  color: var(--color-work); 
+  background-color: #fff;
+  padding: 15px 40px;
+  box-shadow: 0 6px 0 #ebebeb;
+}
+
+.app-wrapper.short-break .start-btn {
+  color: var(--color-short);
+}
+
+.app-wrapper.long-break .start-btn {
+  color: var(--color-long);
+}
+
+.controls button:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #ebebeb;
+}
+
+.controls button:last-child {
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+  font-size: 14px;
+  padding: 10px;
+  text-transform: none;
+}
+
+.controls button:last-child:active {
+  transform: translateY(2px);
+}
+
+.cycles-display {
+  margin-top: 30px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  font-weight: bold;
 }

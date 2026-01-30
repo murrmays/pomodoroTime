@@ -1,9 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
 import TimerDisplay from './Components/Timer';
 import Controls from './Components/Controls';
 import ModeSelector from './Components/Mode';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import alarmSound from './Assets/alarm.mp3';
 
 function App() {
@@ -19,15 +18,13 @@ function App() {
   const [cycles, setCycles] = useState(0);
   const playSound = () => {
     const audio = new Audio(alarmSound);
-    // audio.volume = 0.5;
     audio.play();
   };
-
   useEffect(() => {
     let interval = null;
     if (isRunning && timeLeft > 0) {
       interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
@@ -36,7 +33,6 @@ function App() {
       if(mode === 'work') {
         const newCycles = cycles + 1;
         setCycles(newCycles);
-
         if (newCycles % 4 === 0)
           switchMode('long-break');
         else
@@ -53,54 +49,54 @@ function App() {
     setIsRunning(true);
   };
 
-  const handleToggle = () => setIsRunning(!isRunning);
+  const handleToggle = useCallback(() => setIsRunning(!isRunning), [isRunning]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setIsRunning(false);
     setTimeLeft(settings[mode]);
-  };
+  }, [settings, mode]);
 
-  const handleModeChange = (newMode) => {
+  const handleModeChange = useCallback((newMode) => {
     setMode(newMode)
     setIsRunning(false);
     setTimeLeft(settings[newMode]);
-  };
+  }, [settings]);
 
-  const handleTimeUpdate = (newTime) => {
+  const handleTimeUpdate = useCallback((newTime) => {
     const newSettings = {...settings, [mode]: newTime};
     setSettings(newSettings);
-
     setTimeLeft(newTime);
-  };
+  }, [settings, mode]);
 
   return (
-    <div className='app-container'>
-      <h1>Pomodoro Timer</h1>
-      <ModeSelector
-        mode={mode}
-        onModeChange={handleModeChange}
-      />
+    <div className={`app-wrapper ${mode}`}>
+      <div className='app-container'>
+        <h1 className='app-title'>Pomodoro Timer</h1>
+        <ModeSelector
+          mode={mode}
+          onModeChange={handleModeChange}
+        />
 
-      <TimerDisplay
-        timeLeft={timeLeft}
-        isRunning={isRunning}
-        onUpdate={handleTimeUpdate}
-      />
+        <TimerDisplay
+          key={mode}
+          timeLeft={timeLeft}
+          totalTime={settings[mode]}
+          isRunning={isRunning}
+          onUpdate={handleTimeUpdate}
+        />
 
-      <Controls
-        isRunning={isRunning}
-        onToggle={handleToggle}
-        onReset={handleReset}
-      />
+        <Controls
+          isRunning={isRunning}
+          onToggle={handleToggle}
+          onReset={handleReset}
+        />
 
-      <div className='cycles-display'>
-        Completed sessions: {cycles}
+        <div className='cycles-display'>
+          Completed sessions: {cycles}
+        </div>
       </div>
     </div>
   );
 };
 
 export default App;
-
-//вид + адаптивка
-//можно сделать еще выбор звука для таймера
