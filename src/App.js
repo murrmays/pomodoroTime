@@ -71,8 +71,8 @@ function App() {
     const nextTime = stateRef.current.settings[newMode];
     setMode(newMode);
     setTimeLeft(nextTime);
-    setIsRunning(true);
     targetTimeRef.current = Date.now() + nextTime * 1000;
+    setIsRunning(true);
   }, []);
 
   useEffect(() => {
@@ -104,7 +104,6 @@ function App() {
       } else {
         clearInterval(interval);
         setTimeLeft(0);
-        setIsRunning(false);
         playSound();
 
         const { mode, cycles, longBreakInterval } = stateRef.current;
