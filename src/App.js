@@ -7,10 +7,10 @@ import ModeSelector from './Components/Mode';
 import SettingsModal from './Components/Settings';
 
 import dingSound from './Assets/ding.mp3';
-import microwaveSound from './Assets/microwave-ding.mp3'
-import digitalSound from './Assets/notification.mp3'
-import tickSound from './Assets/tick.mp3'
-import lofiSound from './Assets/lofi.mp3'
+import microwaveSound from './Assets/microwave-ding.mp3';
+import digitalSound from './Assets/notification.mp3';
+import tickSound from './Assets/tick.mp3';
+import lofiSound from './Assets/lofi.mp3';
 import tomatoIcon from './Assets/ic_tomato.png';
 
 const SOUNDS = {
@@ -18,6 +18,10 @@ const SOUNDS = {
   'microwave': microwaveSound,
   'digital': digitalSound
 };
+
+const tickAudio = new Audio(tickSound);
+const lofiAudio = new Audio(lofiSound);
+lofiAudio.loop = true;
 
 function App() {
   const [settings, setSettings] = useState({
@@ -38,107 +42,87 @@ function App() {
   const [bgType, setBgType] = useState('none');
 
   const targetTimeRef = useRef(null);
-  const tickAudioRef = useRef(new Audio(tickSound));
-  const lofiAudioRef = useRef(new Audio(lofiSound));
   const lastSecondRef = useRef(null);
-  const [isAudioReady, setIsAudioReady] = useState(false);
+  const stateRef = useRef({ mode, settings, soundType, volume, bgType, longBreakInterval, cycles });
 
   useEffect(() => {
-    tickAudioRef.current.preload = 'auto';
-    lofiAudioRef.current.preload = 'auto';
-    lofiAudioRef.current.loop = true;
-  }, []);
+    stateRef.current = { mode, settings, soundType, volume, bgType, longBreakInterval, cycles };
+  }, [mode, settings, soundType, volume, bgType, longBreakInterval, cycles]);
 
-  const playSound = () => {
-    const file = SOUNDS[soundType];
-    const audio = new Audio(file);
+  useEffect(() => {
+    tickAudio.volume = volume;
+    lofiAudio.volume = volume;
+
+    if (isRunning && bgType === 'lofi') {
+      lofiAudio.play().catch(() => {});
+    } else {
+      lofiAudio.pause();
+    }
+  }, [isRunning, bgType, volume]);
+
+  const playSound = useCallback(() => {
+    const { soundType, volume } = stateRef.current;
+    const audio = new Audio(SOUNDS[soundType]);
     audio.volume = volume;
-    audio.play();
-  };
-
-  useEffect(() => {
-    lofiAudioRef.current.loop = true;
+    audio.play().catch(() => {});
   }, []);
 
-  useEffect(() => {
-    tickAudioRef.current.volume = volume;
-    lofiAudioRef.current.volume = volume;
-
-    if (bgType !== 'lofi' || !isRunning) {
-      lofiAudioRef.current.pause();
-    }
-    if (bgType === 'lofi' && isRunning) {
-      lofiAudioRef.current.play();
-    }
-  }, [volume, bgType, isRunning]);
+  const switchMode = useCallback((newMode) => {
+    const nextTime = stateRef.current.settings[newMode];
+    setMode(newMode);
+    setTimeLeft(nextTime);
+    setIsRunning(true);
+    targetTimeRef.current = Date.now() + nextTime * 1000;
+  }, []);
 
   useEffect(() => {
     if (!isRunning) {
       targetTimeRef.current = null;
+      lastSecondRef.current = null;
       return;
     }
-    
-    let interval = null;
-    
-    if (targetTimeRef.current === null){
-        targetTimeRef.current = Date.now() + timeLeft * 1000;
+
+    if (targetTimeRef.current === null) {
+      targetTimeRef.current = Date.now() + timeLeft * 1000;
     }
-    
-    interval = setInterval(() => {
-        const remainingTime = (targetTimeRef.current - Date.now()) / 1000;
-        if (remainingTime > 0) {
-          setTimeLeft(remainingTime);
 
-          if (bgType === 'tick') {
-            const currentSecond = Math.ceil(remainingTime);
-            if (currentSecond !== lastSecondRef.current) {
-              const sound = tickAudioRef.current;
-              
-              if (!sound.paused) {
-                sound.pause();
-                sound.currentTime = 0;
-              } else {
-                sound.currentTime = 0;
-              }
-              
-              sound.play().catch(() => {});
-              lastSecondRef.current = currentSecond;
-            }
-          }
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const remaining = (targetTimeRef.current - now) / 1000;
 
-        } else {
-          setTimeLeft(0);
-          setIsRunning(false);
+      if (remaining > 0) {
+        setTimeLeft(remaining);
 
-          targetTimeRef.current = null;
-          lofiAudioRef.current.pause();
-          lofiAudioRef.current.currentTime = 0;
-          
-          playSound();
-
-          if(mode === 'work') {
-            const newCycles = cycles + 1;
-            setCycles(newCycles);
-            if (newCycles % longBreakInterval === 0)
-              switchMode('long-break');
-            else
-              switchMode('short-break');
-          } else {
-            switchMode('work');
+        if (stateRef.current.bgType === 'tick') {
+          const currentSecond = Math.ceil(remaining);
+          if (currentSecond !== lastSecondRef.current) {
+            tickAudio.currentTime = 0;
+            tickAudio.play().catch(() => {});
+            lastSecondRef.current = currentSecond;
           }
         }
-    }, 20);
+      } else {
+        clearInterval(interval);
+        setTimeLeft(0);
+        setIsRunning(false);
+        playSound();
+
+        const { mode, cycles, longBreakInterval } = stateRef.current;
+        if (mode === 'work') {
+          const newCycles = cycles + 1;
+          setCycles(newCycles);
+          switchMode(newCycles % longBreakInterval === 0 ? 'long-break' : 'short-break');
+        } else {
+          switchMode('work');
+        }
+      }
+    }, 25);
 
     return () => clearInterval(interval);
-  }, [isRunning, mode, cycles, settings, soundType, volume, bgType, longBreakInterval]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning, playSound, switchMode]);
 
-  const switchMode = (newMode) => {
-    setMode(newMode);
-    setTimeLeft(settings[newMode]);
-    setIsRunning(true);
-  };
-
-  const handleToggle = useCallback(() => setIsRunning(!isRunning), [isRunning]);
+  const handleToggle = () => setIsRunning(!isRunning);
 
   const handleReset = useCallback(() => {
     setIsRunning(false);
@@ -146,27 +130,27 @@ function App() {
   }, [settings, mode]);
 
   const handleModeChange = useCallback((newMode) => {
-    setMode(newMode)
+    setMode(newMode);
     setIsRunning(false);
     setTimeLeft(settings[newMode]);
   }, [settings]);
 
-  const handleTimeUpdate = useCallback((newTime) => {
-    const newSettings = {...settings, [mode]: newTime};
+  const handleTimeUpdate = (newTime) => {
+    const newSettings = { ...settings, [mode]: newTime };
     setSettings(newSettings);
     setTimeLeft(newTime);
-  }, [settings, mode]);
+  };
 
   return (
     <div className={`app-wrapper ${mode}`}>
       <header className='app-header'>
-          <h1 className='app-title'>Pomodoro Timer</h1>
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            className='settings-button'
-          >
-            Settings
-          </button>
+        <h1 className='app-title'>Pomodoro Timer</h1>
+        <button
+          onClick={() => setIsSettingsOpen(true)}
+          className='settings-button'
+        >
+          Settings
+        </button>
       </header>
 
       <div className='app-container'>
@@ -207,6 +191,12 @@ function App() {
       </div>
       {isSettingsOpen && (
         <SettingsModal
+          settings={settings}
+          updateSettings={(name, val) => {
+            const newSettings = { ...settings, [name]: val };
+            setSettings(newSettings);
+            if (mode === name && !isRunning) setTimeLeft(val);
+          }}
           soundType={soundType}
           setSoundType={setSoundType}
           volume={volume}
@@ -220,6 +210,6 @@ function App() {
       )}
     </div>
   );
-};
+}
 
 export default App;
