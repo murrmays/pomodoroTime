@@ -71,7 +71,7 @@ function App() {
     const nextTime = stateRef.current.settings[newMode];
     setMode(newMode);
     setTimeLeft(nextTime);
-    targetTimeRef.current = Date.now() + nextTime * 1000;
+    targetTimeRef.current = null;
     setIsRunning(true);
   }, []);
 
@@ -87,8 +87,7 @@ function App() {
     }
 
     const interval = setInterval(() => {
-      const now = Date.now();
-      const remaining = (targetTimeRef.current - now) / 1000;
+      const remaining = (targetTimeRef.current - Date.now()) / 1000;
 
       if (remaining > 0) {
         setTimeLeft(remaining);
@@ -119,7 +118,7 @@ function App() {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRunning, playSound, switchMode]);
+  }, [isRunning, mode, playSound, switchMode]);
 
   const handleToggle = () => setIsRunning(!isRunning);
 

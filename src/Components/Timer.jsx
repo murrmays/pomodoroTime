@@ -1,14 +1,14 @@
 import { useState, useEffect} from "react";
-import tomatoImage from '../Assets/tomato.png';
+import tomatoImage from '../Assets/tomato.svg';
 
 function TimerDisplay({timeLeft, totalTime, isRunning, onUpdate}) {
     const [isEditing, setIsEditing] = useState(false);
     const [minutes, setMinutes] = useState('25');
     const [seconds, setSeconds] = useState('00');
 
-    const radius = 220;
-    const stroke = 16;
-    const normRadius = radius - stroke * 2;
+    const radius = 120;
+    const stroke = 10;
+    const normRadius = radius - stroke;
     const circumference = normRadius * 2 * Math.PI;
     const strokeDashOffset = (timeLeft / totalTime) * circumference;
 
@@ -43,8 +43,7 @@ function TimerDisplay({timeLeft, totalTime, isRunning, onUpdate}) {
     return (
       <div className="timer-container">
         <svg
-          height={radius * 2}
-          width={radius * 2}
+          viewBox={`0 0 ${radius * 2} ${radius * 2}`}
           className="timer-svg"
         >
           <circle
