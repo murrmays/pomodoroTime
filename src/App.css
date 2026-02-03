@@ -14,7 +14,7 @@
 }
 
 body {
-  font-family: 'Comic Neue', "Comic Sans MS", cursive;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
 .app-wrapper {
@@ -98,7 +98,7 @@ body {
 }
 
 .mode-buttons button {
-  font-family: 'Caveat', cursive;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.7);
@@ -129,7 +129,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0 20px 0;
+  margin: 0 0 20px 0;
 }
 
 .timer-svg {
@@ -188,7 +188,7 @@ body {
 }
 
 .time-input {
-  font-family: 'Caveat', cursive;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
   font-size: 100px;
   font-weight: bold;
   width: 140px;
@@ -218,7 +218,7 @@ body {
 .controls button {
   max-width: 150px;
   flex: 1;
-  font-family: 'Caveat', cursive;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
   cursor: pointer;
   border: none;
   border-radius: 10px;
@@ -550,7 +550,7 @@ body {
 
 @media (max-width: 470px) {
   body, .mode-buttons button, .time-input, .controls button {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Comic Neue', "Comic Sans MS", cursive, sans-serif;
     overflow-x: hidden;
   }
 }

@@ -95,8 +95,9 @@ function App() {
         if (stateRef.current.bgType === 'tick') {
           const currentSecond = Math.ceil(remaining);
           if (currentSecond !== lastSecondRef.current) {
-            tickAudio.currentTime = 0;
-            tickAudio.play().catch(() => {});
+            const node = tickAudio.cloneNode();
+            node.volume = volume;
+            node.play().catch(() => {});
             lastSecondRef.current = currentSecond;
           }
         }

@@ -33,11 +33,15 @@ function TimerDisplay({timeLeft, totalTime, isRunning, onUpdate}) {
         const total = m * 60 + s;
         onUpdate(total);
     };
-
+    const handleBlur = (e) => {
+      if (!e.currentTarget.contains(e.relatedTarget))
+        handleSave();
+    }
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter')
             handleSave();
-        }
+        if (e.key === 'Escape')
+          setIsEditing(false);
     };
 
     return (
@@ -67,7 +71,7 @@ function TimerDisplay({timeLeft, totalTime, isRunning, onUpdate}) {
 
         <div className="timer-text">
           {isEditing ? (
-            <div className="timer-display editing">
+            <div className="timer-display editing" onBlur={handleBlur}>
               <input
                 type="number"
                 value={minutes}
